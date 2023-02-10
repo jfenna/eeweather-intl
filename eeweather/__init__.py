@@ -102,7 +102,7 @@ from .stations import (
     load_cached_cz2010_hourly_temp_data,
 )
 from .visualization import plot_station_mapping, plot_station_mappings
-
+from .international import *
 
 def get_version():
     return __version__
