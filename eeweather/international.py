@@ -87,12 +87,8 @@ def get_ecmwf_df(year, months, days, filename, area, latitude, longitude):
         filename,
         area,
     )
-    ds = xr.open_dataset(
-        filename, engine="cfgrib"
-    )
-    df = _get_weather_xr(
-        ds, latitude, longitude
-    )
+    ds = xr.open_dataset(filename, engine="cfgrib")
+    df = _get_weather_xr(ds, latitude, longitude)
     # Enable logging
     logging.disable(logging.NOTSET)
     return df
@@ -176,8 +172,8 @@ def get_weather_intervals_for_similar_sites(df):
         portfolio of sites.
     """
 
-    df['latitude'] = round_quarter(df['latitude'])
-    df['longitude'] = round_quarter(df['longitude'])
+    df["latitude"] = round_quarter(df["latitude"])
+    df["longitude"] = round_quarter(df["longitude"])
 
     df_start_sort = (
         df.sort_values(by="start_date")
@@ -199,31 +195,37 @@ def get_weather_intervals_for_similar_sites(df):
     )
 
     # Merge the two dataframes on the index column
-    merged_df = pd.merge(df, df_collated, left_index=True, right_index=True, how='outer', indicator=True)
+    merged_df = pd.merge(
+        df, df_collated, left_index=True, right_index=True, how="outer", indicator=True
+    )
     # Identify the rows that are only in df
-    dropped_sites = list(merged_df[merged_df['_merge'] == 'left_only'].index)
+    dropped_sites = list(merged_df[merged_df["_merge"] == "left_only"].index)
 
     df_shorter_intervals = df.loc[dropped_sites, :]
 
     def match_index(row):
         match = df_collated[
-            (df_collated['latitude'] == row['latitude']) & (df_collated['longitude'] == row['longitude'])]
+            (df_collated["latitude"] == row["latitude"])
+            & (df_collated["longitude"] == row["longitude"])
+        ]
         if match.empty:
             return None
         else:
             return match.index[0]
 
-    df_shorter_intervals['matching_index'] = df_shorter_intervals.apply(match_index, axis=1)
+    df_shorter_intervals["matching_index"] = df_shorter_intervals.apply(
+        match_index, axis=1
+    )
 
     return df_collated, df_shorter_intervals
 
 
 def get_weather_intl(
-        start_date,
-        end_date,
-        latitude=None,
-        longitude=None,
-        areacode: str = None,
+    start_date,
+    end_date,
+    latitude=None,
+    longitude=None,
+    areacode: str = None,
 ):
     """Download hourly 2m temperature data from the European Centre for Medium-range Weather Forecasts (ECMWF)'s via
     its Climate Data Store (CDS) API for anywhere in the world. CDS provides temperature data from 1959 to five days
@@ -336,7 +338,17 @@ def get_weather_intl(
             months = [str(n).rjust(2, "0") for n in range(start_month, end_month + 1)]
 
             for month in months:
-                weather_list.append(get_ecmwf_df(year, month, all_days, filename, bounding_box, latitude, longitude))
+                weather_list.append(
+                    get_ecmwf_df(
+                        year,
+                        month,
+                        all_days,
+                        filename,
+                        bounding_box,
+                        latitude,
+                        longitude,
+                    )
+                )
 
     weather = pd.concat(weather_list)
     weather.sort_index(inplace=True)

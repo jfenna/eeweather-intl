@@ -104,6 +104,7 @@ from .stations import (
 from .visualization import plot_station_mapping, plot_station_mappings
 from .international import *
 
+
 def get_version():
     return __version__
 
