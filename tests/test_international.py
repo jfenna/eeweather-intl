@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
+   Copyright 2023 The Society for the Reduction of Carbon, Ltd (T/A Carbon Co-op).
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -15,6 +17,7 @@
    limitations under the License.
 
 """
+
 import datetime
 from dateutil.relativedelta import relativedelta
 import eeweather
